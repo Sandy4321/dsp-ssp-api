@@ -7,15 +7,35 @@
   <title>Document</title>
 </head>
 <body>
+
+<div id="app">
+  {{ message }}
+</div>
+
+<div id="app-2">
+  <span v-bind:title="message">
+    Hover your mouse over me for a few seconds
+    to see my dynamically bound title!
+  </span>
+</div>
+
+<div id="app-3">
+  <span v-if="seen">Now you see me</span>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
   <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
 
   <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-app.js"></script>
 
   <!-- Add Firebase products that you want to use -->
   <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-storage.js"></script>
 
 
   <script>
@@ -35,6 +55,7 @@
 
     // Get a reference to the database service
     var database = firebase.database();
+    var storage = firebase.storage();
 
       var query = firebase.database().ref("/").orderByKey();
       query.once("value")
@@ -42,14 +63,55 @@
         snapshot.forEach(function(childSnapshot) {
           var key = childSnapshot.key;
           var childData = childSnapshot.val().first_name;
-          console.log(childData);
+          // console.log(childData);
       });
     });
 
+    var storageRef = storage.ref();
 
+    var starsRef = storageRef.child('images/image1.png');
 
+// Get the download URL
+starsRef.getDownloadURL().then(function(url) {
+  // Insert url into an <img> tag to "download"
+    console.log(url);
+}).catch(function(error) {
+  // A full list of error codes is available at
+  // https://firebase.google.com/docs/storage/web/handle-errors
+  switch (error.code) {
+    case 'storage/object-not-found':
+      // File doesn't exist
+      console.log("File doesn't exist");
+      break;
 
+    case 'storage/unauthorized':
+      // User doesn't have permission to access the object
+      break;
 
+    case 'storage/canceled':
+      // User canceled the upload
+      break;
+    case 'storage/unknown':
+      // Unknown error occurred, inspect the server response
+      break;
+  }
+});
+
+//vue
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!'
+  }
+})
+
+var app2 = new Vue({
+  el: '#app-2',
+  data: {
+    message: 'You loaded this page on ' + new Date().toLocaleString()
+  }
+})
 
   </script>
 
