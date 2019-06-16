@@ -8,8 +8,6 @@
 </head>
 <body>
 
-  <p id="demo"></p>
-
 <div id="app">
   {{ message }}
 </div>
@@ -36,6 +34,34 @@
 <div id="app-5">
   <p>{{ message }}</p>
   <button v-on:click="reverseMessage">Reverse Message</button>
+</div>
+
+<div id="app-6">
+  <p>{{ message }}</p>
+  <input v-model="message">
+</div>
+
+<div id="app-8">
+<div id="todo-list-example">
+  <form v-on:submit.prevent="addNewTodo">
+    <label for="new-todo">Add a todo</label>
+    <input
+      v-model="newTodoText"
+      id="new-todo"
+      placeholder="E.g. Feed the cat"
+    >
+    <button>Add</button>
+  </form>
+  <ul>
+    <li
+      is="todo-item"
+      v-for="(todo, index) in todos"
+      v-bind:key="todo.id"
+      v-bind:name="todo.name"
+      v-on:remove="todos.splice(index, 1)"
+    ></li>
+  </ul>
+</div>
 </div>
 
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -72,8 +98,6 @@
     var database = firebase.database();
     var storage = firebase.storage();
 
-    var emails = [];
-
       var query = firebase.database().ref("/").orderByKey();
       query.once("value")
       .then(function(snapshot) {
@@ -83,10 +107,10 @@
           var email = childSnapshot.val().email;
           // app4.todos.push({ text: firstName + ": " + email })
 
+          // app7.groceryList.push({id: key, text: firstName + ": " + email })
+          app8.todos.push({id: key, name: firstName + ": " + email })
+
       });
-      console.log(emails);
-      runlist();
-       document.getElementById("demo").innerHTML = emails;
     });
 
     var storageRef = storage.ref();
@@ -162,10 +186,41 @@ var app5 = new Vue({
   }
 })
 
-console.log(emails);
-function runlist(){
+var app6 = new Vue({
+  el: '#app-6',
+  data: {
+    message: 'Hello Vue!'
+  }
+})
 
-}
+Vue.component('todo-item', {
+  template: '\
+    <li>\
+      {{ name }}\
+      <button v-on:click="$emit(\'remove\')">Remove</button>\
+    </li>\
+  ',
+  props: ['name']
+})
+
+var app8 = new Vue({
+  el: '#todo-list-example',
+  data: {
+    newTodoText: '',
+    todos: [
+    ],
+    nextTodoId: 4
+  },
+  methods: {
+    addNewTodo: function () {
+      this.todos.push({
+        id: this.nextTodoId++,
+        name: this.newTodoText
+      })
+      this.newTodoText = ''
+    }
+  }
+})
 
   </script>
 
